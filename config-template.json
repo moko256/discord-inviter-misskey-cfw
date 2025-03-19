@@ -1,0 +1,10 @@
+{
+    "misskeyHost": "example.com",
+    "misskeyBotUsername": "@test",
+    "misskeyBotToken": "misskey-token",
+    "misskeyWebhookSecret": "misskey-webhook-secret",
+    "discordBotToken": "discord-token",
+    "discordChannelIdInvite": "1234",
+    "botReplyMessageOkInvite": "bot_reply_message_ok_invite",
+    "botReplyMessageErrRemoteUser": "bot_reply_message_err_remote_user"
+}
