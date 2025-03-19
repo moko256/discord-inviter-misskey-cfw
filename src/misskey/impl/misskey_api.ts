@@ -4,10 +4,10 @@ export type MisskeyApiTokenInput = {
 
 export type MisskeyApiNotesCreateInput = {
     visibility: string,
-    visible_user_ids: string[],
+    visibleUserIds: string[],
     text: string | undefined,
-    local_only: boolean,
-    reply_id: string | undefined,
+    localOnly: boolean,
+    replyId: string | undefined,
 }
 
 export class MisskeyApi {
@@ -29,7 +29,7 @@ export class MisskeyApi {
             ...this.tokenBody,
             ...bodyWithoutToken,
         }
-        await fetch(
+        const response = await fetch(
             `https://${this.host}/api/${path}`,
             {
                 body: JSON.stringify(body),
@@ -39,5 +39,8 @@ export class MisskeyApi {
                 },
             },
         );
+        if (response.status != 200) {
+            throw new Error(`Post for Misskey failed: ${response.status}`)
+        }
     }
 }

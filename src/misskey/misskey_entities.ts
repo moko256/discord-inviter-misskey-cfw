@@ -2,7 +2,7 @@ export type MisskeyDmReplyParam = {
     apiHost: string,
     apiToken: MisskeyApiToken,
     noteIdReplyTo: MisskeyNoteId,
-    userIdReplyTo: MisskeyNoteId,
+    userIdReplyTo: MisskeyUserId,
     message: string,
     localOnly: boolean,
 }

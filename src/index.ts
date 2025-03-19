@@ -16,7 +16,9 @@ app.get('/info', (c) => {
 
 app.post('/webhook', async (c) => {
 	const configRepository: ConfigRepository = new ConfigRepositoryImpl()
-	const discordRepository: DiscordRepository = new DiscordRepositoryImpl()
+	const discordRepository: DiscordRepository = new DiscordRepositoryImpl(
+		"https://github.com/moko256/discord-inviter-misskey-cfw", "1.0.0"
+	)
 	const misskeyRepository: MisskeyRepository = new MisskeyRepositoryImpl()
 
 	const inviterUseCase: InviterUseCase = new InviterUseCaseImpl(
@@ -47,6 +49,7 @@ app.post('/webhook', async (c) => {
 					return c.text('Internal Server Error', 500)
 			}
 		}
+		console.log(e)
 	}
 
 	return c.text('Internal Server Error', 500)

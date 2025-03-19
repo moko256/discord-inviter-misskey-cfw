@@ -46,12 +46,14 @@ export class InviterUseCaseImpl implements InviterUseCase {
 
         if (userHost == undefined) {
             // Generate and send invitation url.
-            const reason = `@${userUsername}@${userHost} (${userId})`
+            const reason = `@${userUsername}@${config.misskeyHost} (${userId})`
 
             let url: DiscordInviteUrl;
 
             try {
                 url = await this.discordRepository.generateInviteUrl({
+                    botToken: config.discordBotToken,
+                    channelId: config.discordChannelIdInvite,
                     reason: reason,
                 });
             } catch (e) {

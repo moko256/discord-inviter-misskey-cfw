@@ -1,27 +1,78 @@
 // test/index.spec.ts
-import { env, createExecutionContext, waitOnExecutionContext, SELF } from 'cloudflare:test';
+import { env } from 'cloudflare:test';
 import { describe, it, expect } from 'vitest';
-import worker from '../src/index';
+import app from '../src/index';
 
+import config from '../config.json';
 import config_test from './config-test.json';
+import { MisskeyWebhookBody, MisskeyWebhookBodyBodyMention, MisskeyWebhookHeader } from '../src/misskey_webhook';
 
-// For now, you'll need to do something like this to get a correctly-typed
-// `Request` to pass to `worker.fetch()`.
-const IncomingRequest = Request<unknown, IncomingRequestCfProperties>;
+describe('/info', () => {
+	it('Should success', async () => {
+		const response = await app.request('/info', {}, env)
+		expect(await response.text()).toMatchInlineSnapshot(`"Status: OK"`);
+	});
+});
 
-describe('Hello World worker', () => {
-	it('responds with Hello World! (unit style)', async () => {
-		const request = new IncomingRequest('http://example.com');
-		// Create an empty context to pass to `worker.fetch()`.
-		const ctx = createExecutionContext();
-		const response = await worker.fetch(request, env, ctx);
-		// Wait for all `Promise`s passed to `ctx.waitUntil()` to settle before running test assertions
-		await waitOnExecutionContext(ctx);
-		expect(await response.text()).toMatchInlineSnapshot(`"Hello World!"`);
+describe.skipIf(config_test?.runIntegrationTest != true)('/webhook', () => {
+
+	it('Should fail with empty', async () => {
+		const response = await app.request('/webhook', { method: "POST" }, env)
+		expect(response.status).toMatchInlineSnapshot(`500`);
 	});
 
-	it('responds with Hello World! (integration style)', async () => {
-		const response = await SELF.fetch('https://example.com');
-		expect(await response.text()).toMatchInlineSnapshot(`"Hello World!"`);
+	it('Should fail with empty json', async () => {
+		const response = await app.request('/webhook', { method: "POST", body: JSON.stringify({}) }, env)
+		expect(response.status).toMatchInlineSnapshot(`400`);
+	});
+
+	it('Should fail with invalid token', async () => {
+		const headers: MisskeyWebhookHeader & Record<string, string> = {
+			'X-Misskey-Hook-Secret': "INVALID_TOKEN"
+		}
+		const response = await app.request('/webhook', { method: "POST", body: JSON.stringify({}), headers: headers }, env)
+		expect(response.status).toMatchInlineSnapshot(`400`);
+	});
+
+	it('Should success from remote user', async () => {
+		const headers: MisskeyWebhookHeader & Record<string, string> = {
+			'X-Misskey-Hook-Secret': config.misskeyWebhookSecret
+		}
+		const jsonBody: MisskeyWebhookBody<MisskeyWebhookBodyBodyMention> = {
+			type: "mention",
+			body: {
+				id: config_test.testWebhook.noteId,
+				text: `${config.misskeyBotUsername} test`,
+				user: {
+					id: config_test.testWebhook.userId,
+					username: config_test.testWebhook.userUsername,
+					host: config.misskeyHost,
+				},
+				reply_id: undefined,
+			}
+		}
+		const response = await app.request('/webhook', { method: "POST", body: JSON.stringify(jsonBody), headers: headers }, env)
+		expect(response.status).toMatchInlineSnapshot(`200`);
+	});
+
+	it('Should success from local user', async () => {
+		const headers: MisskeyWebhookHeader & Record<string, string> = {
+			'X-Misskey-Hook-Secret': config.misskeyWebhookSecret
+		}
+		const jsonBody: MisskeyWebhookBody<MisskeyWebhookBodyBodyMention> = {
+			type: "mention",
+			body: {
+				id: config_test.testWebhook.noteId,
+				text: `${config.misskeyBotUsername} test`,
+				user: {
+					id: config_test.testWebhook.userId,
+					username: config_test.testWebhook.userUsername,
+					host: undefined,
+				},
+				reply_id: undefined,
+			}
+		}
+		const response = await app.request('/webhook', { method: "POST", body: JSON.stringify(jsonBody), headers: headers }, env)
+		expect(response.status).toMatchInlineSnapshot(`200`);
 	});
 });

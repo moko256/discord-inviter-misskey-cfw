@@ -1,4 +1,6 @@
 export type DiscordCreateInviteParam = {
+    botToken: string,
+    channelId: string,
     reason: string | undefined,
 }
 
