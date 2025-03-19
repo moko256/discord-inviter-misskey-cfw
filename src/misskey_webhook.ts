@@ -8,12 +8,14 @@ export type MisskeyWebhookBody<T> = {
 }
 
 export type MisskeyWebhookBodyBodyMention = {
-    id: string | undefined,
-    text: string | undefined,
-    user: {
+    note: {
         id: string | undefined,
-        username: string | undefined,
-        host: string | undefined,
-    } | undefined,
-    reply_id: string | undefined,
+        text: string | undefined,
+        user: {
+            id: string | undefined,
+            username: string | undefined,
+            host: string | undefined,
+        } | undefined,
+        reply_id: string | undefined,
+    }
 }

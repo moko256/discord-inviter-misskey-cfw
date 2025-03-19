@@ -24,20 +24,21 @@ export class InviterUseCaseImpl implements InviterUseCase {
             throw new InviterUseCaseError(InviterUseCaseErrorType.InvalidWebhookSecret);
         }
 
-        if (requestBodyMention.body == null || requestBodyMention.type != "mention" || requestBodyMention.body.reply_id != undefined) {
+        const note = requestBodyMention.body?.note
+        if (requestBodyMention.type != "mention" || note == null || note.reply_id != undefined) {
             console.log("This message isn't a mention. Do nothing.");
             return
         }
 
-        if (requestBodyMention.body.text?.startsWith(config.misskeyBotUsername) != true) {
+        if (note.text?.startsWith(config.misskeyBotUsername) != true) {
             console.log("This message is a mention but not at the top. Do nothing.");
             return
         }
 
-        const userHost = requestBodyMention.body.user?.host
-        const noteId = requestBodyMention.body.id
-        const userId = requestBodyMention.body.user?.id
-        const userUsername = requestBodyMention.body.user?.username
+        const userHost = note.user?.host
+        const noteId = note.id
+        const userId = note.user?.id
+        const userUsername = note.user?.username
 
         if (userId == undefined || userUsername == undefined || noteId == undefined) {
             console.log("Invalid message. Do nothing.");
@@ -80,7 +81,7 @@ export class InviterUseCaseImpl implements InviterUseCase {
             }
 
             console.log(
-                `Accepted request from: @${userUsername} (${userId}) \"${requestBodyMention.body.text}\", code: \`${url}\``
+                `Accepted request from: @${userUsername} (${userId}) \"${note.text}\", code: \`${url}\``
             );
         } else {
             // Reject request because the note is from remote.
@@ -101,7 +102,7 @@ export class InviterUseCaseImpl implements InviterUseCase {
             }
 
             console.log(
-                `Rejected request from remote user: @${userUsername}@${userHost} (${userId}) \"${requestBodyMention.body.text}\"`
+                `Rejected request from remote user: @${userUsername}@${userHost} (${userId}) \"${note.text}\"`
             );
         }
     }
@@ -110,7 +111,7 @@ export class InviterUseCaseImpl implements InviterUseCase {
 }
 
 export class InviterUseCaseError extends Error {
-	static InvalidWebhookSecret: any;
+    static InvalidWebhookSecret: any;
     constructor(
         public type: InviterUseCaseErrorType,
     ) {

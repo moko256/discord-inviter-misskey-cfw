@@ -41,14 +41,16 @@ describe.skipIf(config_test?.runIntegrationTest != true)('/webhook', () => {
 		const jsonBody: MisskeyWebhookBody<MisskeyWebhookBodyBodyMention> = {
 			type: "mention",
 			body: {
-				id: config_test.testWebhook.noteId,
-				text: `${config.misskeyBotUsername} test`,
-				user: {
-					id: config_test.testWebhook.userId,
-					username: config_test.testWebhook.userUsername,
-					host: config.misskeyHost,
-				},
-				reply_id: undefined,
+				note: {
+					id: config_test.testWebhook.noteId,
+					text: `${config.misskeyBotUsername} test`,
+					user: {
+						id: config_test.testWebhook.userId,
+						username: config_test.testWebhook.userUsername,
+						host: config.misskeyHost,
+					},
+					reply_id: undefined,
+				}
 			}
 		}
 		const response = await app.request('/webhook', { method: "POST", body: JSON.stringify(jsonBody), headers: headers }, env)
@@ -62,14 +64,16 @@ describe.skipIf(config_test?.runIntegrationTest != true)('/webhook', () => {
 		const jsonBody: MisskeyWebhookBody<MisskeyWebhookBodyBodyMention> = {
 			type: "mention",
 			body: {
-				id: config_test.testWebhook.noteId,
-				text: `${config.misskeyBotUsername} test`,
-				user: {
-					id: config_test.testWebhook.userId,
-					username: config_test.testWebhook.userUsername,
-					host: undefined,
-				},
-				reply_id: undefined,
+				note: {
+					id: config_test.testWebhook.noteId,
+					text: `${config.misskeyBotUsername} test`,
+					user: {
+						id: config_test.testWebhook.userId,
+						username: config_test.testWebhook.userUsername,
+						host: undefined,
+					},
+					reply_id: undefined,
+				}
 			}
 		}
 		const response = await app.request('/webhook', { method: "POST", body: JSON.stringify(jsonBody), headers: headers }, env)

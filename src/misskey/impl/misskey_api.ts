@@ -20,8 +20,8 @@ export class MisskeyApi {
         i: this.token
     }
 
-    notesCreate(input: MisskeyApiNotesCreateInput) {
-        this.postApi("notes/create", input)
+    async notesCreate(input: MisskeyApiNotesCreateInput) {
+        await this.postApi("notes/create", input)
     }
 
     private async postApi<T>(path: string, bodyWithoutToken: T) {
