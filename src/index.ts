@@ -1,4 +1,4 @@
-import { Hono } from 'hono'
+import { Hono } from 'hono/tiny'
 import { ConfigRepositoryImpl } from './config/impl/config_repository_impl'
 import { DiscordRepositoryImpl } from './discord/impl/discord_repository_impl'
 import { MisskeyRepositoryImpl } from './misskey/impl/misskey_repository_impl'
