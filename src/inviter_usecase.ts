@@ -12,13 +12,22 @@ export interface InviterUseCase {
 }
 
 export class InviterUseCaseImpl implements InviterUseCase {
+    #configRepository: ConfigRepository
+    #discordRepository: DiscordRepository
+    #misskeyRepository: MisskeyRepository
+
     constructor(
-        private configRepository: ConfigRepository,
-        private discordRepository: DiscordRepository,
-        private misskeyRepository: MisskeyRepository,
-    ) { }
+        configRepository: ConfigRepository,
+        discordRepository: DiscordRepository,
+        misskeyRepository: MisskeyRepository,
+    ) {
+        this.#configRepository = configRepository
+        this.#discordRepository = discordRepository
+        this.#misskeyRepository = misskeyRepository
+    }
+
     async doInvite(requestHeader: MisskeyWebhookHeader, requestBodyMention: MisskeyWebhookBody<MisskeyWebhookBodyBodyMention>): Promise<void> {
-        const config = this.configRepository.getConfig()
+        const config = this.#configRepository.getConfig()
         if (requestHeader["X-Misskey-Hook-Secret"] != config.misskeyWebhookSecret) {
             console.error("Invalid webhook secret.");
             throw new InviterUseCaseError(InviterUseCaseErrorType.InvalidWebhookSecret);
@@ -52,7 +61,7 @@ export class InviterUseCaseImpl implements InviterUseCase {
             let url: DiscordInviteUrl;
 
             try {
-                url = await this.discordRepository.generateInviteUrl({
+                url = await this.#discordRepository.generateInviteUrl({
                     botToken: config.discordBotToken,
                     channelId: config.discordChannelIdInvite,
                     reason: reason,
@@ -66,7 +75,7 @@ export class InviterUseCaseImpl implements InviterUseCase {
             // Send reply
             const msg = `@${userUsername} ${config.botReplyMessageOkInvite}\n${url}`
             try {
-                await this.misskeyRepository.postReplyDm({
+                await this.#misskeyRepository.postReplyDm({
                     apiHost: config.misskeyHost,
                     apiToken: config.misskeyBotToken,
                     noteIdReplyTo: noteId,
@@ -87,7 +96,7 @@ export class InviterUseCaseImpl implements InviterUseCase {
             // Reject request because the note is from remote.
             const msg = `@${userUsername}@${userHost} ${config.botReplyMessageErrRemoteUser}`
             try {
-                await this.misskeyRepository.postReplyDm({
+                await this.#misskeyRepository.postReplyDm({
                     apiHost: config.misskeyHost,
                     apiToken: config.misskeyBotToken,
                     noteIdReplyTo: noteId,
@@ -119,7 +128,7 @@ export class InviterUseCaseError extends Error {
     }
 }
 
-export enum InviterUseCaseErrorType {
+export const enum InviterUseCaseErrorType {
     InvalidWebhookSecret,
     InvitationFailure,
 }

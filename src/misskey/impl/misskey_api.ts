@@ -11,26 +11,30 @@ export type MisskeyApiNotesCreateInput = {
 }
 
 export class MisskeyApi {
-    constructor(
-        private host: string,
-        private token: string,
-    ) { }
+    #host: string
+    #tokenBody: MisskeyApiTokenInput
 
-    private tokenBody: MisskeyApiTokenInput = {
-        i: this.token
+    constructor(
+        host: string,
+        token: string,
+    ) {
+        this.#host = host
+        this.#tokenBody = {
+            i: token
+        }
     }
 
     async notesCreate(input: MisskeyApiNotesCreateInput) {
-        await this.postApi("notes/create", input)
+        await this.#postApi("notes/create", input)
     }
 
-    private async postApi<T>(path: string, bodyWithoutToken: T) {
+    async #postApi<T>(path: string, bodyWithoutToken: T) {
         const body = {
-            ...this.tokenBody,
+            ...this.#tokenBody,
             ...bodyWithoutToken,
         }
         const response = await fetch(
-            `https://${this.host}/api/${path}`,
+            `https://${this.#host}/api/${path}`,
             {
                 body: JSON.stringify(body),
                 method: "POST",

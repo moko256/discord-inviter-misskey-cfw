@@ -3,13 +3,19 @@ import { DiscordRepository } from "../discord_repository";
 import { DiscordApi } from "./discord_api";
 
 export class DiscordRepositoryImpl implements DiscordRepository {
+    #userAgentClientName: string
+    #userAgentClientVersion: string
+
     constructor(
-        private userAgentClientName: string,
-        private userAgentClientVersion: string,
-    ) {}
+        userAgentClientName: string,
+        userAgentClientVersion: string,
+    ) {
+        this.#userAgentClientName = userAgentClientName
+        this.#userAgentClientVersion = userAgentClientVersion
+    }
 
     async generateInviteUrl(input: DiscordCreateInviteParam): Promise<DiscordInviteUrl> {
-        const api = new DiscordApi(input.botToken, this.userAgentClientName, this.userAgentClientVersion)
+        const api = new DiscordApi(input.botToken, this.#userAgentClientName, this.#userAgentClientVersion)
         const result = await api.channelsInvites(
             {
                 channelId: input.channelId,

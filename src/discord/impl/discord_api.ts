@@ -17,18 +17,26 @@ export type DiscordApiChannelsInvitesOutput = {
 }
 
 export class DiscordApi {
+    #botToken: string
+    #userAgentClientName: string
+    #userAgentClientVersion: string
+
     constructor(
-        private botToken: string,
-        private userAgentClientName: string,
-        private userAgentClientVersion: string,
-    ) { }
+        botToken: string,
+        userAgentClientName: string,
+        userAgentClientVersion: string,
+    ) {
+        this.#botToken = botToken
+        this.#userAgentClientName = userAgentClientName
+        this.#userAgentClientVersion = userAgentClientVersion
+    }
 
     async channelsInvites(
         inputPath: DiscordApiChannelsInvitesInputPath,
         inputBody: DiscordApiChannelsInvitesInputBody,
         inputHeader: DiscordApiChannelsInvitesInputHeader,
     ): Promise<DiscordApiChannelsInvitesOutput> {
-        return await this.fetchApi(
+        return await this.#fetchApi(
             "POST",
             `channels/${inputPath.channelId}/invites`,
             inputBody,
@@ -36,15 +44,15 @@ export class DiscordApi {
         )
     }
 
-    private async fetchApi<T, H, R>(method: string, path: string, body: T, header: H | undefined = undefined): Promise<R> {
+    async #fetchApi<T, H, R>(method: string, path: string, body: T, header: H | undefined = undefined): Promise<R> {
         const response = await fetch(
             `https://discord.com/api/v10/${path}`,
             {
                 body: JSON.stringify(body),
                 method: method,
                 headers: {
-                    "Authorization": `Bot ${this.botToken}`,
-                    "User-Agent": `DiscordBot (${this.userAgentClientName}, ${this.userAgentClientVersion})`,
+                    "Authorization": `Bot ${this.#botToken}`,
+                    "User-Agent": `DiscordBot (${this.#userAgentClientName}, ${this.#userAgentClientVersion})`,
                     "Content-Type": "application/json;charset=UTF-8",
                     ...header,
                 },
