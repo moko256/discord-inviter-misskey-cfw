@@ -1,5 +1,5 @@
-import { MisskeyDmReplyParam } from "./misskey_entities";
+import { MisskeyDmReplyParam } from './misskey_entities';
 
 export interface MisskeyRepository {
-    postReplyDm(input: MisskeyDmReplyParam): Promise<void>
+	postReplyDm(input: MisskeyDmReplyParam): Promise<void>;
 }

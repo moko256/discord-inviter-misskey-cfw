@@ -1,5 +1,5 @@
-import { Config } from "./config_entities";
+import { Config } from './config_entities';
 
 export interface ConfigRepository {
-    getConfig(): Config,
+	getConfig(): Config;
 }

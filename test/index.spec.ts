@@ -9,37 +9,36 @@ import { MisskeyWebhookBody, MisskeyWebhookBodyBodyMention, MisskeyWebhookHeader
 
 describe('/info', () => {
 	it('Should success', async () => {
-		const response = await app.request('/info', {}, env)
+		const response = await app.request('/info', {}, env);
 		expect(await response.text()).toMatchInlineSnapshot(`"Status: OK"`);
 	});
 });
 
 describe.skipIf(config_test?.runIntegrationTest != true)('/webhook', () => {
-
 	it('Should fail with empty', async () => {
-		const response = await app.request('/webhook', { method: "POST" }, env)
+		const response = await app.request('/webhook', { method: 'POST' }, env);
 		expect(response.status).toMatchInlineSnapshot(`500`);
 	});
 
 	it('Should fail with empty json', async () => {
-		const response = await app.request('/webhook', { method: "POST", body: JSON.stringify({}) }, env)
+		const response = await app.request('/webhook', { method: 'POST', body: JSON.stringify({}) }, env);
 		expect(response.status).toMatchInlineSnapshot(`400`);
 	});
 
 	it('Should fail with invalid token', async () => {
 		const headers: MisskeyWebhookHeader & Record<string, string> = {
-			'X-Misskey-Hook-Secret': "INVALID_TOKEN"
-		}
-		const response = await app.request('/webhook', { method: "POST", body: JSON.stringify({}), headers: headers }, env)
+			'X-Misskey-Hook-Secret': 'INVALID_TOKEN',
+		};
+		const response = await app.request('/webhook', { method: 'POST', body: JSON.stringify({}), headers: headers }, env);
 		expect(response.status).toMatchInlineSnapshot(`400`);
 	});
 
 	it('Should success from remote user', async () => {
 		const headers: MisskeyWebhookHeader & Record<string, string> = {
-			'X-Misskey-Hook-Secret': config.misskeyWebhookSecret
-		}
+			'X-Misskey-Hook-Secret': config.misskeyWebhookSecret,
+		};
 		const jsonBody: MisskeyWebhookBody<MisskeyWebhookBodyBodyMention> = {
-			type: "mention",
+			type: 'mention',
 			body: {
 				note: {
 					id: config_test.testWebhook.noteId,
@@ -50,19 +49,19 @@ describe.skipIf(config_test?.runIntegrationTest != true)('/webhook', () => {
 						host: config.misskeyHost,
 					},
 					reply_id: undefined,
-				}
-			}
-		}
-		const response = await app.request('/webhook', { method: "POST", body: JSON.stringify(jsonBody), headers: headers }, env)
+				},
+			},
+		};
+		const response = await app.request('/webhook', { method: 'POST', body: JSON.stringify(jsonBody), headers: headers }, env);
 		expect(response.status).toMatchInlineSnapshot(`200`);
 	});
 
 	it('Should success from local user', async () => {
 		const headers: MisskeyWebhookHeader & Record<string, string> = {
-			'X-Misskey-Hook-Secret': config.misskeyWebhookSecret
-		}
+			'X-Misskey-Hook-Secret': config.misskeyWebhookSecret,
+		};
 		const jsonBody: MisskeyWebhookBody<MisskeyWebhookBodyBodyMention> = {
-			type: "mention",
+			type: 'mention',
 			body: {
 				note: {
 					id: config_test.testWebhook.noteId,
@@ -73,10 +72,10 @@ describe.skipIf(config_test?.runIntegrationTest != true)('/webhook', () => {
 						host: undefined,
 					},
 					reply_id: undefined,
-				}
-			}
-		}
-		const response = await app.request('/webhook', { method: "POST", body: JSON.stringify(jsonBody), headers: headers }, env)
+				},
+			},
+		};
+		const response = await app.request('/webhook', { method: 'POST', body: JSON.stringify(jsonBody), headers: headers }, env);
 		expect(response.status).toMatchInlineSnapshot(`200`);
 	});
 });
