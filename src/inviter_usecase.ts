@@ -35,7 +35,9 @@ export class InviterUseCaseImpl implements InviterUseCase {
 			return;
 		}
 
-		if (note.text?.startsWith(config.misskeyBotUsername) != true) {
+		const prefixCandidateForMention = note.text?.substring(0, config.misskeyBotUsername.length)
+		const SAME = 0
+		if (prefixCandidateForMention?.localeCompare(config.misskeyBotUsername, 'en-US', { sensitivity: 'base' }) != SAME) {
 			console.log('This message is a mention but not at the top. Do nothing.');
 			return;
 		}
