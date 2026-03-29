@@ -6,7 +6,7 @@
 	"$schema": "node_modules/wrangler/config-schema.json",
 	"name": "discord-inviter-misskey-cfw",
 	"main": "src/index.ts",
-	"compatibility_date": "2025-03-17",
+	"compatibility_date": "2026-03-29",
 	"observability": {
 		"enabled": true
 	},
